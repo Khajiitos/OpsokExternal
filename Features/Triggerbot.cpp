@@ -7,6 +7,9 @@ void Triggerbot::run() {
 	if (!config.triggerbot)
 		return;
 
+	if (!GetAsyncKeyState(config.triggerbotKey))
+		return;
+
 	uintptr_t localPlayer = mem.read<uintptr_t>(moduleBase + dwLocalPlayer);
 	int crosshairPlayer = mem.read<int>(localPlayer + m_iCrosshairId);
 
