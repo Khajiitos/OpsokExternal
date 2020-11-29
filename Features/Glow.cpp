@@ -15,10 +15,14 @@ void Glow::run() {
 	int LocalTeam = mem.read<int>(localPlayer + m_iTeamNum);
 	for (int i = 1; i < 64; i++) {
 		uintptr_t dwEntity = mem.read<uintptr_t>(moduleBase + dwEntityList + i * 0x10);
+
+		if (!dwEntity)
+			continue;
+
 		int iGlowIndx = mem.read<int>(dwEntity + m_iGlowIndex);
 		int entHealth = mem.read<int>(dwEntity + m_iHealth);
 
-		if (entHealth < 1 || entHealth > 120)
+		if (entHealth <= 0)
 			continue;
 
 		bool dormant = mem.read<bool>(dwEntity + m_bDormant);
