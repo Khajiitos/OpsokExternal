@@ -10,8 +10,10 @@
 #include "Features/AutoBH.h"
 #include "Features/Triggerbot.h"
 #include "Features/RadarHack.h"
+#include "Vector.h"
+#include "Features/Aimbot.h"
 
-#define VERSION "1.0"
+#define VERSION "1.1"
 
 uintptr_t GetModuleBaseAddress(DWORD procId, const wchar_t* modName)
 {
@@ -45,8 +47,10 @@ int main() {
 		//std::getchar();
 		return 0;
 	}
+
 	GetWindowThreadProcessId(hwnd, &procId);
 	moduleBase = GetModuleBaseAddress(procId, L"client.dll");
+	engineModule = GetModuleBaseAddress(procId, L"engine.dll");
 	hProcess = OpenProcess(PROCESS_ALL_ACCESS, NULL, procId);
 
 	std::cout <<"HWND: " << hwnd << std::endl << "ModuleBase: " << moduleBase << std::endl;
@@ -57,5 +61,6 @@ int main() {
 		AutoBH::run();
 		Triggerbot::run();
 		RadarHack::run();
+		Aimbot::run();
 	}
 }
