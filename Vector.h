@@ -53,6 +53,36 @@ public:
 		return vec;
 	}
 
+	Vector operator*=(float mul) {
+		x *= mul;
+		y *= mul;
+		z *= mul;
+		return *this;
+	}
+
+	Vector operator*(float mul) {
+		Vector vec(x, y, z);
+		vec.x *= mul;
+		vec.y *= mul;
+		vec.z *= mul;
+		return vec;
+	}
+
+	Vector operator/=(Vector other) {
+		x /= other.x;
+		y /= other.y;
+		z /= other.z;
+		return *this;
+	}
+
+	Vector operator/(Vector other) {
+		Vector vec(x, y, z);
+		vec.x /= other.x;
+		vec.y /= other.y;
+		vec.z /= other.z;
+		return vec;
+	}
+
 	bool zero() {
 		return !x && !y && !z;
 	}
@@ -61,10 +91,8 @@ public:
 		return sqrtf(x * x + y * y + z * z);
 	}
 
-	float distance(Vector other)
-	{
+	float distance(Vector other) {
 		Vector diff = *this - other;
 		return diff.magnitude();
 	}
-
 };
