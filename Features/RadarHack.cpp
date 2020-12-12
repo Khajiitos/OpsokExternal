@@ -4,18 +4,20 @@
 #include "../Offsets.h"
 #include "../Globals.h"
 #include "../Memory.h"
+#include "../Vector.h"
 
 void RadarHack::run() {
 
 	if (!config.radarHack)
 		return;
 
-	uintptr_t localPlayer = mem.read<uintptr_t>(moduleBase + dwLocalPlayer);
-	//std::cout << "LocalPlayer team: " << LocalTeam << std::endl;
-	for (int i = 1; i < 64; i++) {
-		uintptr_t player = mem.read<uintptr_t>(moduleBase + dwEntityList + i * 0x10);
+	uintptr_t localPlayer = mem.read<uintptr_t>(clientBase + dwLocalPlayer);
 
-		if (player == NULL)
+	for (int i = 1; i <= 64; i++) {
+
+		uintptr_t player = mem.read<uintptr_t>(clientBase + dwEntityList + i * 0x10);
+
+		if (!player)
 			continue;
 
 		if (mem.read<bool>(player + m_bDormant))
