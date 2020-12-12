@@ -10,37 +10,31 @@ void Glow::run() {
 	if (!config.glow)
 		return;
 
-	uintptr_t localPlayer = mem.read<uintptr_t>(moduleBase + dwLocalPlayer);
-	uintptr_t dwGlowManager = mem.read<uintptr_t>(moduleBase + dwGlowObjectManager);
-	int LocalTeam = mem.read<int>(localPlayer + m_iTeamNum);
-	for (int i = 1; i < 64; i++) {
-		uintptr_t dwEntity = mem.read<uintptr_t>(moduleBase + dwEntityList + i * 0x10);
+	uintptr_t localPlayer = mem.read<uintptr_t>(clientBase + dwLocalPlayer);
+	uintptr_t glowManager = mem.read<uintptr_t>(clientBase + dwGlowObjectManager);
 
-		if (!dwEntity)
+	for (int i = 1; i <= 64; i++) {
+		uintptr_t player = mem.read<uintptr_t>(clientBase + dwEntityList + i * 0x10);
+
+		if (!player)
 			continue;
 
-		int iGlowIndx = mem.read<int>(dwEntity + m_iGlowIndex);
-		int entHealth = mem.read<int>(dwEntity + m_iHealth);
+		int glowIndex = mem.read<int>(player + m_iGlowIndex);
 
-		if (entHealth <= 0)
+		if (!glowIndex)
 			continue;
 
-		bool dormant = mem.read<bool>(dwEntity + m_bDormant);
-
-		if (dormant)
+		int health = mem.read<int>(player + m_iHealth);
+		if (health <= 0 || health > 120)
 			continue;
 
-		int entTeam = mem.read<int>(dwEntity + m_iTeamNum);
+		if (mem.read<bool>(player + m_bDormant))
+			continue;
 
 		GlowStruct glowStr;
-		glowStr.alpha = 0.75f;
+		glowStr.alpha = config.glowAlpha;
 
-		switch (entTeam) {
-		case Team::SPECTATORS:
-			glowStr.red = 1.0f;
-			glowStr.green = 1.0f;
-			glowStr.blue = 1.0f;
-			break;
+		switch (mem.read<int>(player + m_iTeamNum)) {
 		case Team::TERRORISTS:
 			glowStr.red = 0.80f;
 			glowStr.green = 0.72f;
@@ -52,8 +46,6 @@ void Glow::run() {
 			glowStr.blue = 0.69f;
 			break;
 		}
-
-		mem.write<GlowStruct>(dwGlowManager + (iGlowIndx * 0x38) + 0x4, glowStr);
-
+		mem.write<GlowStruct>(glowManager + (glowIndex * 0x38) + 0x4, glowStr);
 	}
 }
