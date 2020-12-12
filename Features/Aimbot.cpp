@@ -10,7 +10,7 @@ constexpr float pi180 = 180.f / (float)PI;
 
 Vector getBonePosition(int entityId, int boneId)
 {
-	uintptr_t player = mem.read<uintptr_t>(moduleBase + dwEntityList + entityId * 0x10);
+	uintptr_t player = mem.read<uintptr_t>(clientBase + dwEntityList + entityId * 0x10);
 	uintptr_t boneMatrix = mem.read<uintptr_t>(player + m_dwBoneMatrix);
 	Vector bonePos;
 	bonePos.x = mem.read<float>(boneMatrix + 0x30 * boneId + 0x0C);
@@ -35,6 +35,12 @@ Vector Aimbot::CalcAngle(Vector src, Vector dst)
 	return angles;
 }
 
+bool isSpotted(uintptr_t entity) {
+	uintptr_t clientState = mem.read<uintptr_t>(clientBase + dwClientState);
+	int localPlayer = mem.read<int>(clientState + dwClientState_GetLocalPlayer);
+	return mem.read<int>(entity + m_bSpottedByMask) & (localPlayer << 0);
+}
+
 void Aimbot::run() {
 
 	if (!config.aimbot)
@@ -48,19 +54,24 @@ void Aimbot::run() {
 	if (!toggled)
 		return;
 
-	uintptr_t localPlayer = mem.read<uintptr_t>(moduleBase + dwLocalPlayer);
-	uintptr_t clientState = mem.read<uintptr_t>(engineModule + dwClientState);
+	uintptr_t localPlayer = mem.read<uintptr_t>(clientBase + dwLocalPlayer);
+	uintptr_t clientState = mem.read<uintptr_t>(engineBase + dwClientState);
 
 	Vector bestTarget;
-	float bestTargetFov = 255.f;
-	float maxfov = 255.f;
+	float bestTargetFov = 420.f;
 
 	if (!localPlayer || mem.read<bool>(localPlayer + m_bInReload))
 		return;
 
-	for (int i = 1; i < 64; i++) {
+	if (mem.read<bool>(localPlayer + m_lifeState) != 0)
+		return;
 
-		uintptr_t player = mem.read<uintptr_t>(moduleBase + dwEntityList + i * 0x10);
+	if (!(mem.read<int>(localPlayer + m_fFlags) & Flags::ON_GROUND))
+		return;
+
+	for (int i = 1; i <= 64; i++) {
+
+		uintptr_t player = mem.read<uintptr_t>(clientBase + dwEntityList + i * 0x10);
 
 		if (!player)
 			continue;
@@ -74,14 +85,22 @@ void Aimbot::run() {
 		if (mem.read<int>(player + m_iTeamNum) == mem.read<int>(localPlayer + m_iTeamNum))
 			continue;
 
+		if (mem.read<bool>(player + m_bGunGameImmunity))
+			continue;
+
+		if (config.aimbotVisibilityCheck && !isSpotted(player))
+			continue;
+
 		if (player == localPlayer)
 			continue;
 
 		Vector curViewAngles = mem.read<Vector>(clientState + dwClientState_ViewAngles);
 
-
 		Vector localplayerpos = mem.read<Vector>(localPlayer + m_vecOrigin) + mem.read<Vector>(localPlayer + m_vecViewOffset);
 		Vector enemyplayerpos = getBonePosition(i, 8);
+
+		if (enemyplayerpos.zero())
+			continue;
 
 		Vector angle = CalcAngle(localplayerpos, enemyplayerpos);
 		Vector relative = curViewAngles - angle;
@@ -89,7 +108,7 @@ void Aimbot::run() {
 
 		const auto fov = std::hypot(relative.x, relative.y);
 
-		if (fov > maxfov)
+		if (fov > config.aimbotFov)
 			continue;
 
 		if (bestTargetFov > fov) {
@@ -100,7 +119,12 @@ void Aimbot::run() {
 
 	}
 
-	if (!bestTarget.zero())
-		mem.write<Vector>(clientState + dwClientState_ViewAngles, bestTarget);
+	if (!bestTarget.zero()) {
 
+		if (config.aimbotControlRecoil)
+			bestTarget -= (mem.read<Vector>(localPlayer + m_aimPunchAngle)) * 2;
+
+		bestTarget.normalize();
+		mem.write<Vector>(clientState + dwClientState_ViewAngles, bestTarget);
+	}
 }
