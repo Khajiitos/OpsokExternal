@@ -6,7 +6,8 @@
 #include <Windows.h>
 #include <TlHelp32.h>
 
-uintptr_t moduleBase = 0;
+uintptr_t clientBase = 0;
+uintptr_t engineBase = 0;
 DWORD procId = 0;
 HWND hwnd = 0;
 HANDLE hProcess = 0;
