@@ -24,7 +24,7 @@ Vector Aimbot::CalcAngle(Vector src, Vector dst)
 	Vector angles;
 
 	Vector delta = src - dst;
-	float hyp = delta.magnitude();
+	float hyp = sqrtf(delta.x * delta.x + delta.y * delta.y);
 	angles.x = atanf(delta.z / hyp) * pi180;
 	angles.y = atanf(delta.y / delta.x) * pi180;
 	angles.z = 0.0f;
