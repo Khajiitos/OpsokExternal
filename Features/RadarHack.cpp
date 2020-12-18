@@ -4,7 +4,6 @@
 #include "../Offsets.h"
 #include "../Globals.h"
 #include "../Memory.h"
-#include "../Vector.h"
 
 void RadarHack::run() {
 
@@ -27,6 +26,5 @@ void RadarHack::run() {
 			continue;
 
 		mem.write<bool>(player + m_bSpotted, true);
-
 	}
 }
