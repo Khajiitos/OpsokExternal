@@ -8,8 +8,16 @@ Current features:
 - Triggerbot
 - Auto bunnyhop
 - Radar hack
+- No flash
 
 Update notes:
+
+1.3, 09/01/2021:
+
+- Added No flash
+- Aimbot is toggled off by default (it can be toggled on using the bottom side mouse button) because it sucks LOL
+- Code improvements
+- Updated offsets
 
 1.2, 12/12/2020:
 
