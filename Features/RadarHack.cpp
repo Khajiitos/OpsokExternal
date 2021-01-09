@@ -4,6 +4,7 @@
 #include "../Offsets.h"
 #include "../Globals.h"
 #include "../Memory.h"
+#include "../Vector.h"
 
 void RadarHack::run() {
 
@@ -11,6 +12,9 @@ void RadarHack::run() {
 		return;
 
 	uintptr_t localPlayer = mem.read<uintptr_t>(clientBase + dwLocalPlayer);
+
+	if (!localPlayer)
+		return;
 
 	for (int i = 1; i <= 64; i++) {
 
