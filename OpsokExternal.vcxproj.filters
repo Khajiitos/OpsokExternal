@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -36,6 +36,15 @@
     <ClCompile Include="Features\RadarHack.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
+    <ClCompile Include="Features\Aimbot.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Features\NoFlash.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Offsets.h">
@@ -60,6 +69,15 @@
       <Filter>Source Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Features\RadarHack.h">
+      <Filter>Source Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="Features\Aimbot.h">
+      <Filter>Source Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInput.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Features\NoFlash.h">
       <Filter>Source Files\Features</Filter>
     </ClInclude>
   </ItemGroup>
