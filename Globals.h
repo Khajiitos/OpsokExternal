@@ -25,7 +25,7 @@ enum Team {
 
 struct Config {
 	bool glow = true;
-	float glowAlpha = 0.8f;
+	float glowAlpha = 0.7f;
 	bool autoBh = true;
 	bool triggerbot = true;
 	short triggerbotKey = VK_XBUTTON2;
@@ -35,6 +35,7 @@ struct Config {
 	short aimbotToggleKey = VK_XBUTTON1;
 	bool aimbotControlRecoil = true;
 	bool aimbotVisibilityCheck = false;
+	bool noFlash = true;
 };
 
 extern Config config;
