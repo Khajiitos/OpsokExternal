@@ -8,46 +8,27 @@
 
 #include "Offsets.h"
 #include "Globals.h"
+#include "UserInput.h"
 
 #include "Features/Glow.h"
 #include "Features/AutoBH.h"
 #include "Features/Triggerbot.h"
 #include "Features/RadarHack.h"
 #include "Features/Aimbot.h"
+#include "Features/NoFlash.h"
 
-#define VERSION "1.2"
-#define print(text) std::cout << text << std::endl
-
-void userInput() {
-	while (true) {
-		std::cout << "> ";
-		std::string cmd;
-		std::getline(std::cin, cmd);
-
-		if (cmd == "help") {
-			print("No commands available (yet).");
-		}
-		else {
-			print("Unknown command. Type \"help\" for a list of commands.");
-		}
-
-	}
-}
+#define VERSION "1.3"
 
 uintptr_t GetModuleBaseAddress(DWORD procId, const wchar_t* modName)
 {
 	uintptr_t modBaseAddr = 0;
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, procId);
-	if (hSnap != INVALID_HANDLE_VALUE)
-	{
+	if (hSnap != INVALID_HANDLE_VALUE) {
 		MODULEENTRY32 modEntry;
 		modEntry.dwSize = sizeof(modEntry);
-		if (Module32First(hSnap, &modEntry))
-		{
-			do
-			{
-				if (!_wcsicmp(modEntry.szModule, modName))
-				{
+		if (Module32First(hSnap, &modEntry)) {
+			do {
+				if (!_wcsicmp(modEntry.szModule, modName)) {
 					modBaseAddr = (uintptr_t)modEntry.modBaseAddr;
 					break;
 				}
@@ -84,7 +65,7 @@ int main() {
 
 	std::cout << "CS:GO window HWND: " << hwnd << std::endl << "client.dll base: " << clientBase << std::endl << "engine.dll base: " << engineBase << std::endl << std::endl;
 
-	std::thread userInputThread(userInput);
+	std::thread userInputThread(UserInput::loop);
 
 	while (true) {
 		Glow::run();
@@ -92,5 +73,6 @@ int main() {
 		Triggerbot::run();
 		RadarHack::run();
 		Aimbot::run();
+		NoFlash::run();
 	}
 }
