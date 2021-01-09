@@ -22,7 +22,6 @@ Vector getBonePosition(int entityId, int boneId)
 Vector Aimbot::CalcAngle(Vector src, Vector dst)
 {
 	Vector angles;
-
 	Vector delta = src - dst;
 	float hyp = sqrtf(delta.x * delta.x + delta.y * delta.y);
 	angles.x = atanf(delta.z / hyp) * pi180;
@@ -38,7 +37,7 @@ Vector Aimbot::CalcAngle(Vector src, Vector dst)
 bool isSpotted(uintptr_t entity) {
 	uintptr_t clientState = mem.read<uintptr_t>(clientBase + dwClientState);
 	int localPlayer = mem.read<int>(clientState + dwClientState_GetLocalPlayer);
-	return mem.read<int>(entity + m_bSpottedByMask) & (localPlayer << 0);
+	return (mem.read<int>(entity + m_bSpottedByMask) & (localPlayer << 0));
 }
 
 void Aimbot::run() {
@@ -46,7 +45,7 @@ void Aimbot::run() {
 	if (!config.aimbot)
 		return;
 
-	static bool toggled = true;
+	static bool toggled = false;
 
 	if (GetAsyncKeyState(config.aimbotToggleKey) & 1)
 		toggled = !toggled;
@@ -58,7 +57,7 @@ void Aimbot::run() {
 	uintptr_t clientState = mem.read<uintptr_t>(engineBase + dwClientState);
 
 	Vector bestTarget;
-	float bestTargetFov = 420.f;
+	float bestTargetFov = FLT_MAX;
 
 	if (!localPlayer || mem.read<bool>(localPlayer + m_bInReload))
 		return;
